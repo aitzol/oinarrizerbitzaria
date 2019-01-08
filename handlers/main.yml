@@ -2,3 +2,6 @@
 # handlers file for baseserver
 - name: restart iptables
   shell: /etc/network/if-pre-up.d/iptables
+
+- name: set datetime
+  shell: /etc/cron.daily/ntpdate
