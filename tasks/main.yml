@@ -106,11 +106,11 @@
 - name: create fake logdirs for fail2ban
   file:
     path: "{{ item }}"
-    state: dorectory
+    state: directory
   with_items:
     - /var/log/apache
     - /var/log/nginx
-    
+
 - name: create fake logfiles for fail2ban
   file: 
     path: "{{ item }}"
