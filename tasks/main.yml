@@ -48,7 +48,7 @@
     - es_ES.UTF-8
 
 - name: Iptables
-  copy: src=files/iptables_rules dest=/etc/iptables.rules
+  copy: src=files/iptables.rules dest=/etc/iptables.rules
   notify: restart iptables
 
 
