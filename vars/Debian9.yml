@@ -13,6 +13,7 @@ apt_packages:
   - libfreetype6
   - libfreetype6-dev
   - libssl-dev
+  - libssl1.1
   - ntpdate
   - screen
   - python-setuptools
