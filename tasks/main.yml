@@ -103,6 +103,13 @@
 - name: enable la
   lineinfile: dest=/home/csmant/.bashrc line="alias la='ls -la'" state=present
 
+- name: create fake logfiles for fail2ban
+  file: 
+    path: {{ item }}
+    state: {{ exists }}
+  with_items:
+    - /var/log/nginx/fake.log
+    - /va log/apache/fake.log
 - name: Fail2ban rules
   blockinfile:
     create: yes
