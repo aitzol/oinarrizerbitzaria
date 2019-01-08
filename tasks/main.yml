@@ -117,7 +117,7 @@
     state: touch
   with_items:
     - /var/log/nginx/fake.log
-    - /va log/apache/fake.log
+    - /var/log/apache/fake.log
 - name: Fail2ban rules
   blockinfile:
     create: yes
