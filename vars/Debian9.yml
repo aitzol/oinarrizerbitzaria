@@ -38,3 +38,4 @@ apt_packages:
   - unrtf
   - wv
   - curl
+  - fail2ban
