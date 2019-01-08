@@ -1,0 +1,22 @@
+---
+# vars file for baseserver
+sshd_match:
+  - Condition: "User root"
+    PasswordAuthentication: no
+
+timezone: Europe/Madrid
+
+sudo_users:
+  - name: 'csmant'
+    nopasswd: yes
+
+ssh_users:
+  - name: root
+    key: "{{ lookup('file', 'files/ssh_keys_root') }}"
+
+  - name: csmant
+    key: "{{ lookup('file', 'files/ssh_keys_csmant') }}"
+
+fail2ban_local:
+  - name: rules
+    key: "{{ lookup('file', 'files/fail.local') }}"

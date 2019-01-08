@@ -1,0 +1,15 @@
+[xmlrpc-nginx]
+enabled = true
+filter = xmlrpc
+action = iptables[name=xmlrpc, port=http, protocol=tcp]
+logpath = /var/log/nginx/*.log
+bantime = 43600
+maxretry = 20
+
+[xmlrpc-apache]
+enabled = true
+filter = xmlrpc
+action = iptables[name=xmlrpc, port=http, protocol=tcp]
+logpath = /var/log/apache/*.log
+bantime = 43600
+maxretry = 20

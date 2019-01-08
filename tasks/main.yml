@@ -1,0 +1,116 @@
+---
+# tasks file for baseserver
+- name: Add user csmant
+  user: name=csmant state=present shell=/bin/bash
+
+- name: Remove user apt-dater
+  user: name=apt-dater state=absent
+
+- name: Set full domain in bash prompt
+  lineinfile:
+    destfile: /home/csmant/.bashrc
+    state: present
+    line: PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\H\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]$(__git_ps1 "(%s)")\$ '
+
+- name: Set full domain in bash prompt
+  lineinfile:
+    destfile: /root/.bashrc
+    state: present
+    line: PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\H\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+
+- name: Ensure correct ssh keys
+  authorized_key: user={{ item.name }} key="{{ item.key }}" exclusive=yes
+  with_items: "{{ ssh_users }}"
+
+- name: Include Debian8 packages
+  include_vars: "Debian8.yml"
+  when: 
+    - ansible_distribution == "Debian"
+    - ansible_distribution_major_version == "8"
+
+- name: Include Debian9 packages
+  include_vars: "Debian9.yml"
+  when: 
+    - ansible_distribution == "Debian"
+    - ansible_distribution_major_version == "9"
+
+- name: Update packages via apt
+  apt: upgrade=dist update_cache=yes
+
+ - name: Ensure additional packages via apt
+   apt: pkg={{ item }} state=present
+   with_items: "{{ apt_packages }}"
+
+- name: Locales
+  locale_gen: name={{ item }} state=present
+  with_items:
+    - eu_ES.UTF-8
+    - es_ES.UTF-8
+
+- name: Iptables
+  copy: src=files/iptables_rules dest=/etc/iptables.rules
+  notify: restart iptables
+
+
+- name: iptables when restart
+  copy: src=files/iptables dest=/etc/network/if-pre-up.d/iptables owner=root group=root mode="u=rwx,g=r,o=r"
+  notify: restart iptables
+
+- name: add screen file
+  copy: src=files/screenrc dest={{ item }} owner=csmant group=csmant
+  with_items:
+    - /home/csmant/.screenrc
+    - /root/.screenrc
+
+- name: copy python initialize file
+  copy: src=files/initialize.py dest={{ item }} owner=csmant group=csmant
+  with_items:
+    - /home/csmant/.initialize.py
+
+- name: copy python initialize file
+  lineinfile: dest=/home/csmant/.bashrc line="export PYTHONSTARTUP=~/.initialize.py" state=present
+
+- name: add gitconfig files
+  copy: src=files/gitconfig dest={{ item }} owner=csmant group=csmant
+  with_items:
+    - /home/csmant/.gitconfig
+
+- name: add gitignore files
+  copy: src=files/gitignore dest={{ item }} owner=csmant group=csmant
+  with_items:
+    - /home/csmant/.gitignore
+
+- name: git-prompt
+  get_url:
+      url: https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh
+      dest: /home/csmant/.git-prompt.sh
+      owner: csmant
+      group: csmant
+
+- name: enable git-prompt
+  lineinfile: dest=/home/csmant/.bashrc line="source ~/.git-prompt.sh" state=present
+
+- name: ntpdate
+  copy: src=files/ntpdate dest=/etc/cron.daily/ntpdate owner=root group=root mode="u=rwx,g=r,o=r"
+  notify: set datetime
+
+- name: restart sshd
+  service: name=ssh state=restarted
+
+- name: enable ll
+  lineinfile: dest=/home/csmant/.bashrc line="alias ll='ls -l'" state=present
+
+- name: enable la
+  lineinfile: dest=/home/csmant/.bashrc line="alias la='ls -la'" state=present
+
+- name: Fail2ban rules
+  blockinfile:
+    create: yes
+    block: "{{ lookup('file', 'files/fail.local')}}"
+    path: /etc/fail2ban/jail.d/jail.local
+    
+- name: Fail2ban xmlrpc filters
+  copy: src=files/fail2ban_xmlrpc dest=/etc/fail2ban/filter.d/xmlrpc.conf
+
+- name: restart fail2ban
+  service: name=fail2ban state=restarted

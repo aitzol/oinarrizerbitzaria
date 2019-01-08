@@ -1,0 +1,43 @@
+[user]
+    name = CS Zerbitzaria
+    email = root@codesyntax.com
+
+[core]
+    excludesfile = /home/csmant/.gitignore
+    editor = nano
+    # Highlight whitespace errors in git diff:
+    whitespace = tabwidth=4,tab-in-indent,cr-at-eol,trailing-space
+    fileMode = false
+[http]
+    sslVerify = false
+[branch]
+    autosetuprebase = always
+[alias]
+    foo = log --graph --decorate --pretty=oneline --abbrev-commit --all
+    hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
+    type = cat-file -t
+    dump = cat-file -p
+    st = status
+    ci = commit
+    br = branch
+    co = checkout
+    df = diff
+    dfs = diff --staged
+    undo = reset --soft HEAD^
+
+    # A log of commits indicating where various branches are currently pointing.
+    lga = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative --branches --remotes
+    fulllog = log --graph --decorate --pretty=oneline --abbrev-commit --all
+    # "git weburl" prints the URL of the github project page for repositories hosted on github.
+    weburl = !git config --get remote.origin.url | sed -e 's/git:\\/\\/github.com/https:\\/\\/github.com/' -e 's/git@github.com:/https:\\/\\/github.com\\//' -e 's/\\.git$//'
+    # "git browse" opens the github project page of this repository in the browser.
+    browse = !open `git weburl`
+
+
+# pretty colors, yay!
+[color]
+    diff = auto
+    status = auto
+    branch = auto
+[push]
+    default = simple

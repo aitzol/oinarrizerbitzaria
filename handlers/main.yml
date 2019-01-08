@@ -1,0 +1,4 @@
+---
+# handlers file for baseserver
+- name: restart iptables
+  shell: /etc/network/if-pre-up.d/iptables
